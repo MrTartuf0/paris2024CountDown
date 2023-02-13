@@ -53,6 +53,9 @@
   
   const checkSeconds = (secondsNumber , index) => {
     secondsNumber -= index
+    if(secondsNumber < 0) {
+      secondsNumber = 60 + secondsNumber
+    }
     return secondsNumber.toString().padStart(2, '0')
   }
 
