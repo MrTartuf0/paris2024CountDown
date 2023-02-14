@@ -13,14 +13,14 @@
       </div>
     </div>
 
-    <div>
-      <div v-for="n in 6">
-        14
+    <div class="flex flex-col-reverse ">
+      <div v-for="index in 7" class="w-full flex justify-center relative top-[-11.5rem]" ref="minutsNode" :class="{ turnDownClass: isAnimatedMinuts }">
+        {{ checkMinuts(minutsNumber , index) }}
       </div>
     </div>
 
     <div class="flex flex-col-reverse ">
-      <div v-for="(number, index) in 7" class="w-full flex justify-evenly relative top-[-11.5rem]" ref="collection" :class="{ turnDownClass: isAnimated }">
+      <div v-for="index in 7" class="w-full flex justify-center relative top-[-11.5rem] " ref="secondsNode" :class="{ turnDownClass: isAnimated }">
         {{ checkSeconds(secondsNumber , index) }}
       </div>
     </div>
@@ -39,6 +39,8 @@
 </style>
 
 <script setup>
+  let speed = 1
+
   let targetDate = new Date('05/05/2023') 
   let currentDate = new Date()
   let msRemaning = targetDate - currentDate
@@ -47,42 +49,58 @@
   let minutsRemaning = Math.floor((msRemaning - ((daysRemaning * (1000 * 3600 * 24)) + hoursRemaning * (1000*3600))) / 60000)
   let secondsRemaning = Math.floor((msRemaning - ((daysRemaning*(1000*3600*24)) + (hoursRemaning*(1000*3600)) + (minutsRemaning*(60000)) )) / 1000)
 
-  const collection = ref(null)
+  const secondsNode = ref(null)
+  const minutsNode = ref(null)
 
   let secondsNumber = secondsRemaning
+  let minutsNumber = minutsRemaning
   
   const checkSeconds = (secondsNumber , index) => {
-    secondsNumber -= index
+    secondsNumber = secondsNumber - (index - 6)
     if(secondsNumber < 0) {
       secondsNumber = 60 + secondsNumber
     }
     return secondsNumber.toString().padStart(2, '0')
   }
 
+  const checkMinuts = (minutsNumber , index) => {
+    minutsNumber = minutsNumber - (index - 6)
+    if(minutsNumber < 0) {
+      minutsNumber = 60 + minutsNumber
+    }
+    return minutsNumber.toString().padStart(2, '0')
+  }
+
 
   const isAnimated = ref(false)
+  const isAnimatedMinuts = ref(false)
   
   function seconds(){
 
     setInterval(() => {
       isAnimated.value = true
-    }, 1000)
+    }, speed)
 
-    collection.value[0].addEventListener("animationend" , () => {
+    secondsNode.value[0].addEventListener("animationend" , () => {
       console.log('animazione finita');
       isAnimated.value = false
       
       secondsNumber--
 
       if(secondsNumber == 0){
-        secondsNumber = 60
+        secondsNumber = 59
+        isAnimatedMinuts.value = true
       }
 
-      for(let i=0 ; i<collection.value.length ; i++){
-        collection.value[i]
-      }
 
     })
+
+    minutsNode.value[0].addEventListener("animationend" , () => {
+      console.log('animazione minuti finita')
+      isAnimatedMinuts.value = false
+      minutsNumber--
+    })
+
   }
 
   onMounted(() => seconds())
